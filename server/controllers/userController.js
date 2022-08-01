@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const cloudinary = require("cloudinary").v2;
 const User = require("../models/userModel");
 const asyncHandler = require("express-async-handler");
 const sendToken = require("../utils/sendToken");
@@ -140,4 +141,54 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
 
   await user.save();
   sendToken(user, 200, res);
+});
+
+// Update Password
+exports.updatePassword = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req?.user?.id).select("+password");
+
+  const isPasswordMatched = await user.comparePassword(req?.body?.oldPassword);
+
+  if (!isPasswordMatched) {
+    return next(new ErrorHandler("Current password is Invalid", 400));
+  }
+
+  user.password = req?.body?.newPassword;
+  await user.save();
+  sendToken(user, 201, res);
+});
+
+// Update user profile
+exports.updateProfile = asyncHandler(async (req, res) => {
+  try {
+    const userNewData = {
+      name: req?.body?.name,
+      gender: req?.body?.gender,
+    };
+
+    if (req?.file) {
+      const user = await User.findById(req?.user?.id);
+      const imageId = user?.avatar?.public_id;
+      if (imageId) {
+        await cloudinary.uploader.destroy(imageId);
+      }
+      const localPath = `public/images/avatar/${req?.file?.originalname}`;
+      const avatarUpload = await cloudinaryUploadAvatarImages(localPath);
+      userNewData.avatar = {
+        public_id: avatarUpload?.public_id,
+        url: avatarUpload?.secure_url,
+      };
+    }
+
+    await User.findByIdAndUpdate(req?.user?.id, userNewData, {
+      new: true,
+      runValidators: true,
+    });
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+    });
+  } catch (error) {
+    res.json(error.message);
+  }
 });

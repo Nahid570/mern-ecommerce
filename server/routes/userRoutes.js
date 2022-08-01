@@ -6,6 +6,8 @@ const {
   getUserDetails,
   forgetPassword,
   resetPassword,
+  updatePassword,
+  updateProfile,
 } = require("../controllers/userController");
 const { isAuthenticatedUser } = require("../middlewares/auth");
 const { photoUpload, avatarResize } = require("../middlewares/photoUpload");
@@ -28,5 +30,15 @@ userRouter.get("/user-details", isAuthenticatedUser, getUserDetails);
 userRouter.post("/forget-password", forgetPassword);
 
 userRouter.put("/password/reset/:token", resetPassword);
+
+userRouter.put("/password/update", isAuthenticatedUser, updatePassword);
+
+userRouter.put(
+  "/update/profile",
+  photoUpload.single("avatar"),
+  avatarResize,
+  isAuthenticatedUser,
+  updateProfile
+);
 
 module.exports = userRouter;
