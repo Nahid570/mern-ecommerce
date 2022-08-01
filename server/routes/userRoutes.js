@@ -9,6 +9,9 @@ const {
   updatePassword,
   updateProfile,
   getAllUsers,
+  getSingleUser,
+  updateUserRole,
+  deleteUser,
 } = require("../controllers/userController");
 const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
 const { photoUpload, avatarResize } = require("../middlewares/photoUpload");
@@ -47,6 +50,27 @@ userRouter.get(
   isAuthenticatedUser,
   authorizeRoles("admin"),
   getAllUsers
+);
+
+userRouter.get(
+  "/admin/user/:id",
+  isAuthenticatedUser,
+  authorizeRoles("admin"),
+  getSingleUser
+);
+
+userRouter.put(
+  "/admin/user/:id",
+  isAuthenticatedUser,
+  authorizeRoles("admin"),
+  updateUserRole
+);
+
+userRouter.delete(
+  "/admin/user/:id",
+  isAuthenticatedUser,
+  authorizeRoles("admin"),
+  deleteUser
 );
 
 module.exports = userRouter;

@@ -205,3 +205,57 @@ exports.getAllUsers = asyncHandler(async (req, res, next) => {
     users,
   });
 });
+
+// Get single user details -> ADMIN
+exports.getSingleUser = asyncHandler(async (req, res, next) => {
+  try {
+    const user = await User.findById(req?.params?.id);
+    if (!user) {
+      return next(new ErrorHandler("User doesn't exists", 404));
+    }
+    res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 404));
+  }
+});
+
+// Update user role -> ADMIN
+exports.updateUserRole = asyncHandler(async (req, res, next) => {
+  try {
+    const userNewData = {
+      name: req?.body?.name,
+      email: req?.body?.email,
+      gender: req?.body?.gender,
+      role: req?.body?.role,
+    };
+
+    await User.findByIdAndUpdate(req?.params?.id, userNewData, {
+      new: true,
+      runValidators: true,
+    });
+    res.status(200).json({
+      success: true,
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 404));
+  }
+});
+
+// Delete user -> ADMIN
+exports.deleteUser = asyncHandler(async (req, res, next) => {
+  try {
+    const user = await User.findById(req?.params?.id);
+    if (!user) {
+      return next(new ErrorHandler("User doesn't exist's", 404));
+    }
+    await user.remove();
+    res.status(200).json({
+      success: true,
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 404));
+  }
+});
