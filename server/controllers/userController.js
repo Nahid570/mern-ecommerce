@@ -192,3 +192,16 @@ exports.updateProfile = asyncHandler(async (req, res) => {
     res.json(error.message);
   }
 });
+
+// ADMIN DASHBOARD
+// Get all the users ->> ADMIN
+exports.getAllUsers = asyncHandler(async (req, res, next) => {
+  const users = await User.find();
+  if (!users) {
+    return next(new ErrorHandler("No users found", 404));
+  }
+  res.status(200).json({
+    success: true,
+    users,
+  });
+});

@@ -8,8 +8,9 @@ const {
   resetPassword,
   updatePassword,
   updateProfile,
+  getAllUsers,
 } = require("../controllers/userController");
-const { isAuthenticatedUser } = require("../middlewares/auth");
+const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
 const { photoUpload, avatarResize } = require("../middlewares/photoUpload");
 
 const userRouter = express.Router();
@@ -39,6 +40,13 @@ userRouter.put(
   avatarResize,
   isAuthenticatedUser,
   updateProfile
+);
+
+userRouter.get(
+  "/admin/users",
+  isAuthenticatedUser,
+  authorizeRoles("admin"),
+  getAllUsers
 );
 
 module.exports = userRouter;
