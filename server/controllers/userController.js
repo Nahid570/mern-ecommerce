@@ -3,6 +3,7 @@ const asyncHandler = require("express-async-handler");
 const sendToken = require("../utils/sendToken");
 const { cloudinaryUploadAvatarImages } = require("../utils/cloudinary");
 const ErrorHandler = require("../utils/errorHandler");
+const sendEmail = require("../utils/sendMail");
 require("dotenv").config();
 
 // Register User
@@ -68,5 +69,50 @@ exports.logoutUser = asyncHandler(async (req, res) => {
       success: true,
       message: "Logged Out",
     });
+  }
+});
+
+// get user details
+exports.getUserDetails = asyncHandler(async (req, res) => {
+  const user = await User.findById(req?.user?.id);
+  if (!user) {
+    throw new Error("No user found!");
+  }
+  res.status(200).json({
+    success: true,
+    user,
+  });
+});
+
+// Forget password
+exports.forgetPassword = asyncHandler(async (req, res, next) => {
+  const user = await User.findOne({ email: req?.body?.email });
+
+  if (!user) {
+    return next(new ErrorHandler("User Not Found", 404));
+  }
+
+  const resetToken = await user.getRestPasswordToken();
+  await user.save();
+
+  const resetPasswordUrl = `http://localhost:3000/password/reset/${resetToken}`;
+
+  try {
+    await sendEmail({
+      email: user?.email,
+      templateId: `${process.env.SENDGRID_RESET_TEMPLATE}`,
+      data: {
+        resetUrl: resetPasswordUrl,
+      },
+    });
+    res.status(200).json({
+      success: true,
+      message: `Email sent to ${user?.email} successfully`,
+    });
+  } catch (error) {
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    await user.save();
+    return next(new ErrorHandler(error.message, 500));
   }
 });
