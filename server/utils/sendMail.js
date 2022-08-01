@@ -6,7 +6,7 @@ const sendEmail = async (options) => {
     to: options.email,
     from: `${process.env.SENDGRID_MAIL}`,
     templateId: options.templateId,
-    dynamic_template_data: options.data,
+    dynamic_template_data: options?.data,
   };
   sgMail
     .send(msg)

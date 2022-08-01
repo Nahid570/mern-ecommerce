@@ -5,6 +5,7 @@ const {
   logoutUser,
   getUserDetails,
   forgetPassword,
+  resetPassword,
 } = require("../controllers/userController");
 const { isAuthenticatedUser } = require("../middlewares/auth");
 const { photoUpload, avatarResize } = require("../middlewares/photoUpload");
@@ -25,5 +26,7 @@ userRouter.get("/logout", logoutUser);
 userRouter.get("/user-details", isAuthenticatedUser, getUserDetails);
 
 userRouter.post("/forget-password", forgetPassword);
+
+userRouter.put("/password/reset/:token", resetPassword);
 
 module.exports = userRouter;
