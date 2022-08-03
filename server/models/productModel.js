@@ -41,27 +41,27 @@ const productSchema = new mongoose.Schema({
     {
       public_id: {
         type: String,
-        required: true,
+        // required: true,
       },
       url: {
         type: String,
-        required: true,
+        // required: true,
       },
     },
   ],
   brand: {
     name: {
       type: String,
-      required: true,
+      // required: true,
     },
     logo: {
       public_id: {
         type: String,
-        required: true,
+        // required: true,
       },
       url: {
         type: String,
-        required: true,
+        // required: true,
       },
     },
   },
