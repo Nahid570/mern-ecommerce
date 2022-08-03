@@ -9,6 +9,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+// upload user avatar image
 const cloudinaryUploadAvatarImages = async (fileToUpload) => {
   try {
     const data = await cloudinary.uploader.upload(fileToUpload, {
@@ -28,4 +29,48 @@ const cloudinaryUploadAvatarImages = async (fileToUpload) => {
   }
 };
 
-module.exports = { cloudinaryUploadAvatarImages };
+// upload user avatar image
+const cloudinaryUploadProductImages = async (fileToUpload) => {
+  try {
+    const data = await cloudinary.uploader.upload(fileToUpload, {
+      folder: "mern-ecommerce/products",
+    });
+    fs.unlink(fileToUpload, (err) => {
+      if (err) throw new Error(err.message);
+      return;
+    });
+    return data;
+  } catch (error) {
+    fs.unlink(fileToUpload, (err) => {
+      if (err) throw new Error(err.message);
+      return;
+    });
+    return error;
+  }
+};
+
+// upload user avatar image
+const cloudinaryUploadBrandImages = async (fileToUpload) => {
+  try {
+    const data = await cloudinary.uploader.upload(fileToUpload, {
+      folder: "mern-ecommerce/brand",
+    });
+    fs.unlink(fileToUpload, (err) => {
+      if (err) throw new Error(err.message);
+      return;
+    });
+    return data;
+  } catch (error) {
+    fs.unlink(fileToUpload, (err) => {
+      if (err) throw new Error(err.message);
+      return;
+    });
+    return error;
+  }
+};
+
+module.exports = {
+  cloudinaryUploadAvatarImages,
+  cloudinaryUploadProductImages,
+  cloudinaryUploadBrandImages
+};
