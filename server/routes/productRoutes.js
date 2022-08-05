@@ -4,6 +4,12 @@ const {
   createProduct,
   updateProduct,
   getAllProducts,
+  getProducts,
+  getProductDetails,
+  getAdminProducts,
+  createProductReview,
+  getProductReviews,
+  deleteReview,
 } = require("../controllers/productController");
 const { isAuthenticatedUser, authorizeRoles } = require("../middlewares/auth");
 const {
@@ -48,5 +54,22 @@ productRouter.delete(
 );
 
 productRouter.get("/products", getAllProducts);
+
+productRouter.get("/products/all", getProducts);
+
+productRouter.get("/product/:id", getProductDetails);
+
+productRouter.get(
+  "/admin/products",
+  isAuthenticatedUser,
+  authorizeRoles("admin"),
+  getAdminProducts
+);
+
+productRouter.put("/review", isAuthenticatedUser, createProductReview);
+
+productRouter.get("/reviews/:id", getProductReviews);
+
+productRouter.delete("/reviews/:id", isAuthenticatedUser, deleteReview);
 
 module.exports = productRouter;
